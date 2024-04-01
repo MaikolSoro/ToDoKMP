@@ -37,6 +37,14 @@ class MongoDB {
             } ?: flow { RequestState.Error(message = "Realm is not available.") }
     }
 
+    fun readCompletedTasks(): Flow<RequestState<List<ToDoTask>>> {
+        return realm?.query<ToDoTask>(query = "completed == $0", true)
+            ?.asFlow()
+            ?.map { result -> RequestState.Success(data = result.list) }
+            ?: flow { RequestState.Error(message = "Realm is not available.") }
+    }
+
+
     suspend fun addTask(task: ToDoTask) {
         realm?.write { copyToRealm(task) }
     }
